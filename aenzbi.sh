@@ -1,14 +1,15 @@
 #!/bin/bash
 
 # Database files for products, orders, sales, inventory, purchases, customers, and suppliers
-PRODUCTS_DB="products.txt"
-ORDERS_DB="orders.txt"
-SALES_DB="sales.txt"
-INVENTORY_DB="inventory.txt"
-PURCHASES_DB="inventory.txt"
-CUSTOMERS_DB="customers.txt"
-SUPPLIERS_DB="suppliers.txt"
-INVOICE_DIR="invoices"
+DATABASE_DIR="databases"
+PRODUCTS_DB="$DATABASE_DIR/products.txt"
+ORDERS_DB="$DATABASE_DIR/orders.txt"
+SALES_DB="$DATABASE_DIR/sales.txt"
+INVENTORY_DB="$DATABASE_DIR/inventory.txt"
+PURCHASES_DB="$DATABASE_DIR/purchases.txt"
+CUSTOMERS_DB="$DATABASE_DIR/customers.txt"
+SUPPLIERS_DB="$DATABASE_DIR/suppliers.txt"
+INVOICE_DIR="$DATABASE_DIR/invoices"
 
 # eBMS login credentials
 EBMS_USERNAME=""
@@ -23,6 +24,7 @@ EBMS_CANCEL_INVOICE_ENDPOINT="https://ebms.obr.gov.bi:9443/ebms_api/cancelInvoic
 
 # Initialize the database files and directories if they don't exist
 initialize_databases() {
+    mkdir -p "$DATABASE_DIR"
     touch "$PRODUCTS_DB" "$ORDERS_DB" "$SALES_DB" "$INVENTORY_DB" "$PURCHASES_DB" "$CUSTOMERS_DB" "$SUPPLIERS_DB"
     mkdir -p "$INVOICE_DIR"
 }
@@ -60,6 +62,7 @@ ebms_login() {
     echo "=== eBMS Login ==="
     read -p "Enter your eBMS username: " EBMS_USERNAME
     read -s -p "Enter your eBMS password: " EBMS_PASSWORD
+    echo
 
     # Prepare login data
     login_data="{\"username\": \"$EBMS_USERNAME\", \"password\": \"$EBMS_PASSWORD\"}"
@@ -175,97 +178,27 @@ list_all_products() {
     read -p "Press Enter to continue..."
 }
 
-search_product() {
+searchsearch_product() {
     clear
     echo "=== Search Product ==="
-    read -p "Enter product name to search: " query
+    read -p "Enter product name to search: " name
+
+    # Search for product by name and display details
     found=false
     while IFS= read -r line
     do
-        if [[ "$line" == *"$query"* ]]; then
-            echo "Product found: $line"
+        product_name=$(echo "$line" | cut -d',' -f1)
+        if [[ "$product_name" == "$name" ]]; then
+            echo "Product found:"
+            echo "$line"
             found=true
+            break  # Stop searching after finding the product
         fi
     done < "$PRODUCTS_DB"
+
     if [ "$found" = false ]; then
-        echo "Product '$query' not found."
+        echo "Product '$name' not found."
     fi
+
     read -p "Press Enter to continue..."
 }
-
-# Order Management Functions
-order_management() {
-    while true
-    do
-        clear
-        echo "=== Order Management ==="
-        echo "1. List Pending Orders"
-        echo "2. Edit Order"
-        echo "3. Cancel Order"
-        echo "4. Draft Order"
-        echo "5. Back to Main Menu"
-        echo "========================"
-        read -p "Enter your choice: " order_choice
-
-        case $order_choice in
-            1) list_pending_orders ;;
-            2) edit_order ;;
-            3) cancel_order ;;
-            4) draft_order ;;
-            5) break ;;
-            *) echo "Invalid choice. Please enter a valid option." ;;
-        esac
-    done
-}
-
-list_pending_orders() {
-    clear
-    echo "=== List of Pending Orders ==="
-    grep "PENDING" "$ORDERS_DB"
-    read -p "Press Enter to continue..."
-}
-
-edit_order() {
-    clear
-    echo "=== Edit Order ==="
-    read -p "Enter order ID to edit: " order_id
-    # Implement logic to edit order by order_id
-    echo "Order '$order_id' edited successfully!"
-    read -p "Press Enter to continue..."
-}
-
-cancel_order() {
-    clear
-    echo "=== Cancel Order ==="
-    read -p "Enter order ID to cancel: " order_id
-    # Implement logic to cancel order by order_id
-    echo "Order '$order_id' cancelled successfully!"
-    read -p "Press Enter to continue..."
-}
-
-draft_order() {
-    clear
-    echo "=== Draft Order ==="
-    read -p "Enter order details to draft: " order_details
-    echo "$order_details,PENDING" >> "$ORDERS_DB"
-    echo "Order drafted successfully!"
-    read -p "Press Enter to continue..."
-}
-
-# Inventory Management Functions
-inventory_management() {
-    while true
-    do
-        clear
-        echo "=== Inventory Management ==="
-        echo "1. List Inventory"
-        echo "2. Update Inventory"
-        echo "3. Back to Main Menu"
-        echo "============================"
-        read -p "Enter your choice: " inventory_choice
-
-        case $inventory_choice in
-            1) list_inventory ;;
-            2) update_inventory ;;
-            3) break ;;
-            *) echo "Invalid choice
