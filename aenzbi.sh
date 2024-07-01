@@ -5,7 +5,7 @@ PRODUCTS_DB="products.txt"
 ORDERS_DB="orders.txt"
 SALES_DB="sales.txt"
 INVENTORY_DB="inventory.txt"
-PURCHASES_DB="purchases.txt"
+PURCHASES_DB="inventory.txt"
 CUSTOMERS_DB="customers.txt"
 SUPPLIERS_DB="suppliers.txt"
 INVOICE_DIR="invoices"
@@ -193,28 +193,79 @@ search_product() {
     read -p "Press Enter to continue..."
 }
 
-# Order Management Functions (Add other module functions similarly)
+# Order Management Functions
+order_management() {
+    while true
+    do
+        clear
+        echo "=== Order Management ==="
+        echo "1. List Pending Orders"
+        echo "2. Edit Order"
+        echo "3. Cancel Order"
+        echo "4. Draft Order"
+        echo "5. Back to Main Menu"
+        echo "========================"
+        read -p "Enter your choice: " order_choice
 
-# Main loop
-initialize_databases  # Initialize databases on script start
+        case $order_choice in
+            1) list_pending_orders ;;
+            2) edit_order ;;
+            3) cancel_order ;;
+            4) draft_order ;;
+            5) break ;;
+            *) echo "Invalid choice. Please enter a valid option." ;;
+        esac
+    done
+}
 
-while true
-do
-    display_menu
+list_pending_orders() {
+    clear
+    echo "=== List of Pending Orders ==="
+    grep "PENDING" "$ORDERS_DB"
+    read -p "Press Enter to continue..."
+}
 
-    case $choice in
-        1) product_management ;;
-        2) order_management ;;
-        3) inventory_management ;;
-        4) sales_management ;;
-        5) purchase_management ;;
-        6) customer_management ;;
-        7) supplier_management ;;
-        8) invoice_management ;;
-        9) ebms_login ;;
-        10) break ;;
-        *) echo "Invalid choice. Please enter a valid option." ;;
-    esac
-done
+edit_order() {
+    clear
+    echo "=== Edit Order ==="
+    read -p "Enter order ID to edit: " order_id
+    # Implement logic to edit order by order_id
+    echo "Order '$order_id' edited successfully!"
+    read -p "Press Enter to continue..."
+}
 
-echo "Thank you for using Grocery Management System!"
+cancel_order() {
+    clear
+    echo "=== Cancel Order ==="
+    read -p "Enter order ID to cancel: " order_id
+    # Implement logic to cancel order by order_id
+    echo "Order '$order_id' cancelled successfully!"
+    read -p "Press Enter to continue..."
+}
+
+draft_order() {
+    clear
+    echo "=== Draft Order ==="
+    read -p "Enter order details to draft: " order_details
+    echo "$order_details,PENDING" >> "$ORDERS_DB"
+    echo "Order drafted successfully!"
+    read -p "Press Enter to continue..."
+}
+
+# Inventory Management Functions
+inventory_management() {
+    while true
+    do
+        clear
+        echo "=== Inventory Management ==="
+        echo "1. List Inventory"
+        echo "2. Update Inventory"
+        echo "3. Back to Main Menu"
+        echo "============================"
+        read -p "Enter your choice: " inventory_choice
+
+        case $inventory_choice in
+            1) list_inventory ;;
+            2) update_inventory ;;
+            3) break ;;
+            *) echo "Invalid choice
